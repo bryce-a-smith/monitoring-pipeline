@@ -1,0 +1,147 @@
+/* ==========================================================================
+    styles/styles.css — monitoring-pipeline (status.aldenbryce.com)
+    Local styles only. Import AFTER theme.css.
+    <link rel="stylesheet" href="https://aldenbryce.com/theme.css" />
+    <link rel="stylesheet" href="styles/styles.css" />
+    ========================================================================== */
+
+/* 
+    LOCAL :ROOT — DARK THEME VALUES
+    Overrides the variable names defined in theme.css with dark values.
+*/
+:root {
+  --color-bg: #0f1117; /* dark page background */
+  --color-surface: #1e2330; /* elevated card surface */
+  --color-border: #2d3748; /* subtle dark border */
+  --color-text: #e2e8f0; /* light primary text */
+  --color-muted: #94a3b8; /* muted secondary text */
+  --color-accent: #60a5fa; /* blue links */
+}
+
+/* 
+    LAYOUT — PAGE CENTERING
+    this page uses flex centering on body.
+ */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  text-align: center;
+  padding: var(--space-lg);
+  max-width: 520px;
+  width: 100%;
+}
+
+/* 
+    PAGE HEADER
+    Stays here — specific to the status page layout.
+*/
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.domain {
+  color: var(--color-muted);
+  font-size: var(--font-size-xs);
+  margin-bottom: var(--space-lg);
+}
+
+/* 
+   STATUS CARD
+*/
+
+.status-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); /* --radius-lg from theme.css */
+  padding: 1.25rem 2rem;
+  margin-bottom: var(--space-md);
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  background: var(--color-green); /* --color-green from theme.css */
+  box-shadow: 0 0 8px var(--color-green);
+}
+
+.status-text {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+/* 
+   META INFO (environment, date, notes)
+*/
+
+.meta {
+  color: var(--color-muted);
+  font-size: var(--font-size-xs);
+  line-height: 2;
+  margin-bottom: var(--space-md);
+}
+
+.meta strong {
+  color: var(--color-text);
+}
+
+/*
+    Environment label colors — set by script.js via inline class.
+    The status utility classes (.status-ok, .status-warn, .status-error) from theme.css handle
+    the color values.
+*/
+
+/* 
+    NAV LINKS (header links back to main site)
+    status page header.
+ */
+
+header {
+  margin-bottom: var(--space-md);
+}
+
+header h1 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  margin-top: var(--space-xs);
+}
+
+nav ul li a {
+  font-size: var(--font-size-xs);
+  color: var(--color-muted);
+}
+
+nav ul li a:hover {
+  color: var(--color-accent);
+}
+
+/*
+    FOOTER LINKS ROW
+    Note: .footer from theme.css handles the footer text styling.
+*/
+
+.links {
+  font-size: var(--font-size-xs);
+  color: var(--color-muted);
+}

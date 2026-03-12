@@ -1,0 +1,164 @@
+/* ==========================================================================
+   theme.css
+   Hosted at: aldenbryce.com/theme.css
+   Shared across all projects. Import this first, before any local stylesheet.
+   <link rel="stylesheet" href="https://aldenbryce.com/theme.css" />
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS CUSTOM PROPERTIES (variables)
+   Defined here as a contract — each project's local stylesheet sets
+   the actual values by overriding :root. This file uses var() throughout
+   so it works with any color theme (light or dark).
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Colors — no defaults here intentionally.
+     Each local stylesheet must define these for its own theme.
+     See main site styles.css and monitoring pipeline styles.css for values. */
+  --color-bg:        ; /* page background */
+  --color-surface:   ; /* card / elevated surface */
+  --color-border:    ; /* borders and dividers */
+  --color-text:      ; /* primary text */
+  --color-muted:     ; /* secondary / subdued text */
+  --color-accent:    ; /* links, highlights, interactive */
+
+  /* Status colors — same meaning across all projects */
+  --color-green: #22c55e; /* operational / success */
+  --color-yellow: #facc15; /* warning / degraded */
+  --color-orange: #fb923c; /* partial outage / staging */
+  --color-red: #ef4444; /* error / down */
+
+  /* Typography — consistent across all projects */
+  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-size-xs: 0.85rem;
+  --font-size-sm: 0.9rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.1rem;
+  --line-height-base: 1.6;
+
+  /* Spacing scale — reusable across layouts */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 60px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+
+  /* Z-index scale — prevents magic numbers */
+  --z-sticky: 1000;
+}
+
+/* --------------------------------------------------------------------------
+   RESET
+   Belongs in theme.css — universal, applies to every project the same way.
+   -------------------------------------------------------------------------- */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   BASE BODY
+   font-family and line-height belong here — consistent across all projects.
+   color and background are intentionally left out — they use variables
+   set by each project's local :root override.
+   padding-top: env(safe-area-inset-top) is here because it handles
+   mobile notch/safe area on every project.
+   -------------------------------------------------------------------------- */
+
+body {
+  padding-top: env(safe-area-inset-top);
+  font-family: var(--font-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text); /* value comes from local :root */
+  background: var(--color-bg); /* value comes from local :root */
+}
+
+/* --------------------------------------------------------------------------
+   BASE LINK STYLES
+   Belongs here — link color behavior is consistent across projects,
+   just driven by the --color-accent variable each project sets.
+   -------------------------------------------------------------------------- */
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   UTILITY CLASSES — STATUS INDICATORS
+   Belongs here — these classes have the same meaning on every project.
+   The monitoring pipeline and any future project can use them directly.
+   -------------------------------------------------------------------------- */
+
+.status-ok {
+  color: var(--color-green);
+}
+.status-warn {
+  color: var(--color-yellow);
+}
+.status-error {
+  color: var(--color-red);
+}
+
+/* --------------------------------------------------------------------------
+   UTILITY CLASSES — TYPOGRAPHY
+   Belongs here — generic enough to be reused anywhere.
+   -------------------------------------------------------------------------- */
+
+.text-muted {
+  color: var(--color-muted);
+}
+.text-sm {
+  font-size: var(--font-size-sm);
+}
+.text-xs {
+  font-size: var(--font-size-xs);
+}
+
+/* --------------------------------------------------------------------------
+   BUTTON
+   Belongs here — the button style is reusable across projects.
+   Uses --color-accent so it inherits each project's accent color.
+   The main site sets --color-accent to #2563eb.
+   If the monitoring pipeline ever uses buttons, they'll match automatically.
+   -------------------------------------------------------------------------- */
+
+.button {
+  display: inline-block;
+  padding: 10px 18px;
+  background: var(--color-accent);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+}
+
+.button:hover {
+  filter: brightness(0.9); /* works for any accent color without hardcoding hover */
+  text-decoration: none; /* override the base a:hover above */
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER
+   Belongs here — the footer pattern (centered, small, muted) is
+   consistent across projects. Font size and color use variables.
+   -------------------------------------------------------------------------- */
+
+.footer {
+  text-align: center;
+  padding: 25px 0;
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+}
