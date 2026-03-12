@@ -1,35 +1,36 @@
 /* ==========================================================================
-   theme.css
-   Hosted at: aldenbryce.com/theme.css
-   Shared across all projects. Import this first, before any local stylesheet.
-   <link rel="stylesheet" href="https://aldenbryce.com/theme.css" />
+   theme.css — aldenbryce.com/theme.css
+   Shared across ALL projects. Import this first.
+
+   Philosophy: everything structural and typographic lives here.
+   The ONLY thing local stylesheets need to override is color.
+   Each project sets its own :root color values. Everything else is shared.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   CSS CUSTOM PROPERTIES (variables)
-   Defined here as a contract — each project's local stylesheet sets
-   the actual values by overriding :root. This file uses var() throughout
-   so it works with any color theme (light or dark).
+   CSS CUSTOM PROPERTIES
+   Variable NAMES are defined here. VALUES are set in each project's
+   local :root block. This file uses var() throughout so it adapts
+   to any color scheme automatically.
    -------------------------------------------------------------------------- */
 
 :root {
-  /* Colors — no defaults here intentionally.
-     Each local stylesheet must define these for its own theme.
-     See main site styles.css and monitoring pipeline styles.css for values. */
-  --color-bg:        ; /* page background */
-  --color-surface:   ; /* card / elevated surface */
-  --color-border:    ; /* borders and dividers */
-  --color-text:      ; /* primary text */
-  --color-muted:     ; /* secondary / subdued text */
-  --color-accent:    ; /* links, highlights, interactive */
+  /* Colors — values intentionally blank here, set locally per project */
+  --color-bg:        ;
+  --color-surface:   ;
+  --color-border:    ;
+  --color-text:      ;
+  --color-muted:     ;
+  --color-accent:    ;
+  --color-accent-hover: ;
 
-  /* Status colors — same meaning across all projects */
-  --color-green: #22c55e; /* operational / success */
-  --color-yellow: #facc15; /* warning / degraded */
-  --color-orange: #fb923c; /* partial outage / staging */
-  --color-red: #ef4444; /* error / down */
+  /* Status colors — same meaning everywhere, fixed values */
+  --color-green: #22c55e;
+  --color-yellow: #facc15;
+  --color-orange: #fb923c;
+  --color-red: #ef4444;
 
-  /* Typography — consistent across all projects */
+  /* Typography */
   --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-size-xs: 0.85rem;
   --font-size-sm: 0.9rem;
@@ -37,7 +38,7 @@
   --font-size-lg: 1.1rem;
   --line-height-base: 1.6;
 
-  /* Spacing scale — reusable across layouts */
+  /* Spacing */
   --space-xs: 8px;
   --space-sm: 12px;
   --space-md: 20px;
@@ -49,13 +50,17 @@
   --radius-md: 6px;
   --radius-lg: 12px;
 
-  /* Z-index scale — prevents magic numbers */
+  /* Layout */
+  --container-max: 900px;
+  --container-padding: 0 20px;
+
+  /* Z-index */
   --z-sticky: 1000;
 }
 
 /* --------------------------------------------------------------------------
    RESET
-   Belongs in theme.css — universal, applies to every project the same way.
+   Universal. Same on every project.
    -------------------------------------------------------------------------- */
 
 * {
@@ -65,26 +70,41 @@
 }
 
 /* --------------------------------------------------------------------------
-   BASE BODY
-   font-family and line-height belong here — consistent across all projects.
-   color and background are intentionally left out — they use variables
-   set by each project's local :root override.
-   padding-top: env(safe-area-inset-top) is here because it handles
-   mobile notch/safe area on every project.
+   BASE — BODY
+   Structural properties (font, line-height, safe area) live here.
+   Color and background use variables — each project sets its own values.
    -------------------------------------------------------------------------- */
 
 body {
   padding-top: env(safe-area-inset-top);
   font-family: var(--font-base);
   line-height: var(--line-height-base);
-  color: var(--color-text); /* value comes from local :root */
-  background: var(--color-bg); /* value comes from local :root */
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-size: var(--font-size-base);
+
+  /* Flex column layout with min-height to push footer to bottom if content is short */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* --------------------------------------------------------------------------
-   BASE LINK STYLES
-   Belongs here — link color behavior is consistent across projects,
-   just driven by the --color-accent variable each project sets.
+   CONTAINER
+   Shared layout wrapper. Same max-width and padding pattern on every project.
+   Both the main site and the pipeline use .container.
+   -------------------------------------------------------------------------- */
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--container-padding);
+}
+
+/* --------------------------------------------------------------------------
+   LINKS
+   Base link behavior is consistent everywhere.
+   Color driven by --color-accent which each project sets locally.
    -------------------------------------------------------------------------- */
 
 a {
@@ -93,46 +113,113 @@ a {
 }
 
 a:hover {
+  color: var(--color-accent-hover);
   text-decoration: underline;
 }
 
 /* --------------------------------------------------------------------------
-   UTILITY CLASSES — STATUS INDICATORS
-   Belongs here — these classes have the same meaning on every project.
-   The monitoring pipeline and any future project can use them directly.
+   NAVBAR
+   Full navbar lives here — both sites use the same structure.
+   Background and border colors driven by variables.
    -------------------------------------------------------------------------- */
 
-.status-ok {
-  color: var(--color-green);
+.navbar {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
 }
-.status-warn {
-  color: var(--color-yellow);
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 70px;
+  gap: 16px;
 }
-.status-error {
-  color: var(--color-red);
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.unstyled-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.project-link:hover {
+  text-decoration: underline;
 }
 
 /* --------------------------------------------------------------------------
-   UTILITY CLASSES — TYPOGRAPHY
-   Belongs here — generic enough to be reused anywhere.
+   SECTIONS
+   Generic section padding pattern. Works on any page.
+   .section.alt uses --color-surface for alternating background.
    -------------------------------------------------------------------------- */
 
-.text-muted {
+.section {
+  padding: var(--space-xl) 0;
+}
+
+.section.alt {
+  background: var(--color-surface);
+}
+
+.section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   HERO
+   Used on the main site homepage. Included here because any project
+   could use a hero block and the pattern should be consistent.
+   -------------------------------------------------------------------------- */
+
+.hero {
+  padding: 80px 0 50px;
+  text-align: center;
+  background: var(--color-surface);
+}
+
+.hero h2 {
+  font-size: 2.2rem;
+  margin-bottom: 15px;
+}
+
+.hero-subtext {
+  max-width: 600px;
+  margin: auto;
   color: var(--color-muted);
-}
-.text-sm {
-  font-size: var(--font-size-sm);
-}
-.text-xs {
-  font-size: var(--font-size-xs);
 }
 
 /* --------------------------------------------------------------------------
    BUTTON
-   Belongs here — the button style is reusable across projects.
-   Uses --color-accent so it inherits each project's accent color.
-   The main site sets --color-accent to #2563eb.
-   If the monitoring pipeline ever uses buttons, they'll match automatically.
+   Shared component. Uses --color-accent so it inherits each project's
+   accent color automatically. Hover uses brightness filter so it works
+   for any accent color without needing a hardcoded hover value.
    -------------------------------------------------------------------------- */
 
 .button {
@@ -146,14 +233,13 @@ a:hover {
 }
 
 .button:hover {
-  filter: brightness(0.9); /* works for any accent color without hardcoding hover */
-  text-decoration: none; /* override the base a:hover above */
+  filter: brightness(0.9);
+  text-decoration: none;
 }
 
 /* --------------------------------------------------------------------------
    FOOTER
-   Belongs here — the footer pattern (centered, small, muted) is
-   consistent across projects. Font size and color use variables.
+   Same pattern on every project — centered, small, muted.
    -------------------------------------------------------------------------- */
 
 .footer {
@@ -161,4 +247,124 @@ a:hover {
   padding: 25px 0;
   color: var(--color-muted);
   font-size: var(--font-size-sm);
+  margin-top: auto; /* push footer to bottom if content is short */
+}
+
+/* --------------------------------------------------------------------------
+   STATUS UTILITY CLASSES
+   Semantic color classes with consistent meaning across all projects.
+   Used on status indicators, labels, and inline text.
+   -------------------------------------------------------------------------- */
+
+.status-ok {
+  color: var(--color-green);
+}
+.status-warn {
+  color: var(--color-yellow);
+}
+.status-error {
+  color: var(--color-red);
+}
+
+/* --------------------------------------------------------------------------
+   TYPOGRAPHY UTILITIES
+   Generic enough to be reused anywhere.
+   -------------------------------------------------------------------------- */
+
+.text-muted {
+  color: var(--color-muted);
+}
+.text-sm {
+  font-size: var(--font-size-sm);
+}
+.text-xs {
+  font-size: var(--font-size-xs);
+}
+.label {
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE — NAVBAR
+   Breakpoints for the shared navbar. Lives here because the navbar
+   component itself lives here.
+   -------------------------------------------------------------------------- */
+
+/* large desktop */
+@media (min-width: 1280px) {
+  .navbar .container {
+    max-width: 1200px;
+    padding: 0 32px;
+  }
+
+  .logo {
+    font-size: 1.7rem;
+  }
+
+  .nav-links a {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* tablet and down */
+@media (max-width: 1024px) {
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .nav-links {
+    gap: 16px;
+  }
+
+  .nav-links a {
+    font-size: 1.05rem;
+  }
+}
+
+/* phones */
+@media (max-width: 640px) {
+  .nav-content {
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .nav-links {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .nav-links a {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* very small phones */
+@media (max-width: 400px) {
+  .nav-content {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .logo {
+    font-size: 1.05rem;
+    line-height: 1.15;
+  }
+
+  .nav-links {
+    gap: 10px;
+  }
+
+  .nav-links a {
+    font-size: 0.9rem;
+  }
 }
