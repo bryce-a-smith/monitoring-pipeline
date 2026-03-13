@@ -77,6 +77,58 @@ async function fetchLastDeployed(siteId, branch) {
   return data[0].commit.committer.date;
 }
 
+// ui and card builder//
+
+function createStatusCard(env) {
+  const branch = getBranchFromUrl(env.url);
+
+  const card = document.createElement("div");
+  card.className = "status-card";
+  card.dataset.siteId = env.siteId;
+  card.dataset.branch = branch;
+
+  const indicator = document.createElement("span");
+  indicator.className = "status-indicator";
+  indicator.setAttribute("aria-hidden", "true");
+
+  const body = document.createElement("div");
+  body.className = "status-card-body";
+
+  const siteLink = document.createElement("a");
+  siteLink.className = "status-site";
+  siteLink.href = env.url;
+  siteLink.target = "_blank";
+  siteLink.rel = "noopener noreferrer";
+  siteLink.textContent = env.label;
+
+  const statusText = document.createElement("span");
+  statusText.className = "status-text status-ok";
+  statusText.textContent = "Operational";
+
+  body.appendChild(siteLink);
+  body.appendChild(statusText);
+
+  card.appendChild(indicator);
+  card.appendChild(body);
+
+  return card;
+}
+
+function buildStatusCards() {
+  const container = document.getElementById("status-cards");
+  if (!container) return;
+
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
+
+  const fragment = document.createDocumentFragment();
+  ENVIRONMENTS.forEach((env) => fragment.appendChild(createStatusCard(env)));
+  container.appendChild(fragment);
+}
+
+////
+
 function parseDate(dateString) {
   // Convert raw date string to Date object
   return new Date(dateString);
