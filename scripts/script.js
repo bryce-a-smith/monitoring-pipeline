@@ -160,17 +160,54 @@ function createStatusCard(env) {
   return card;
 }
 
-function buildStatusCards() {
+async function buildStatusCards() {
   const container = document.getElementById("status-cards");
   if (!container) return;
 
+  // clear existing cards
   while (container.firstChild) {
     container.removeChild(container.firstChild);
   }
 
+  // build all cards synchronously -- page renders immediately with loading state
   const fragment = document.createDocumentFragment();
   ENVIRONMENTS.forEach((env) => fragment.appendChild(createStatusCard(env)));
   container.appendChild(fragment);
+
+  // fire status check and all date fetches in parallel
+  const [statusResult, ...dateResults] = await Promise.allSettled([
+    fetchSiteStatus(),
+    ...ENVIRONMENTS.map((env) =>
+      fetchLastDeployed(env.siteId, getBranchFromUrl(env.url))
+        .then((raw) => ({
+          url: env.url,
+          date: formatDate(raw, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZoneName: "short",
+          }),
+        }))
+        .catch(() => ({ url: env.url, date: "unavailable" })),
+    ),
+  ]);
+
+  // apply live status indicators -- silently skip if fetch failed
+  if (statusResult.status === "fulfilled") {
+    applyStatusToCards(container, statusResult.value);
+  } else {
+    console.warn("fetchSiteStatus failed:", statusResult.reason);
+  }
+
+  // apply per-card last deployed dates
+  dateResults.forEach((result) => {
+    if (result.status !== "fulfilled") return;
+    const { url, date } = result.value;
+    const span = container.querySelector(`.status-card-date[data-url="${CSS.escape(url)}"]`);
+    if (span) span.textContent = date;
+  });
 }
 
 ////
