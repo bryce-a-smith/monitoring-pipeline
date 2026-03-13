@@ -201,5 +201,3 @@ main .container {
 .status-card-date {
   font-variant-numeric: tabular-nums; /* date doesn't shift width as it loads */
 }
-
-/* test comment */
