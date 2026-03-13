@@ -77,6 +77,16 @@ async function fetchLastDeployed(siteId, branch) {
   return data[0].commit.committer.date;
 }
 
+const STATUS_URL = "https://raw.githubusercontent.com/bryce-a-smith/monitoring-pipeline/status-data/status.json";
+
+async function fetchSiteStatus() {
+  const res = await fetch(STATUS_URL);
+  if (!res.ok) throw new Error(`status.json fetch failed: ${res.status}`);
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error("status.json is not an array");
+  return data;
+}
+
 // ui and card builder//
 
 function createStatusCard(env) {
