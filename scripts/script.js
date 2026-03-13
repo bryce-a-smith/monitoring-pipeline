@@ -19,21 +19,60 @@ const ENVIRONMENTS = [
   { label: "qa.status.aldenbryce.com", url: "https://qa.status.aldenbryce.com", siteId: "monitoring" },
 ];
 
-function getRepo(repoId) {
-  const repo = REPOS.find((r) => r.id === repoId);
-  if (!repo) throw new Error(`unknown repoId: ${repoId}`);
-  return repo;
+// utility //
+
+function getBranchFromUrl(url) {
+  // derives git branch from subdomain convention: dev. = dev, qa. = qa, root = main
+  const hostname = new URL(url).hostname;
+  if (hostname.startsWith("dev.")) return "dev";
+  if (hostname.startsWith("qa.")) return "qa";
+  return "main";
 }
 
-async function fetchLastDeployed(repoId, branch) {
-  const repo = getRepo(repoId);
-  const url = `https://api.github.com/repos/${repo.owner}/${repo.name}/commits?sha=${branch}&per_page=1`;
+function getBranch(hostname) {
+  // current environment's branch -- same logic, takes hostname directly
+  if (hostname.startsWith("dev.")) return "dev";
+  if (hostname.startsWith("qa.")) return "qa";
+  return "main";
+}
+
+function getEnv(hostname) {
+  if (hostname.startsWith("dev.")) return "DEV";
+  if (hostname.startsWith("qa.")) return "QA";
+  return "Production";
+}
+
+function isProd(hostname) {
+  return getEnv(hostname) === "Production";
+}
+
+function formatDate(iso, options) {
+  if (!iso) return "unavailable";
+  const defaults = { month: "short", day: "numeric", year: "numeric" };
+  return new Date(iso).toLocaleDateString("en-US", options || defaults);
+}
+
+function setText(element, text) {
+  if (element) element.textContent = text;
+}
+
+// -- api -- //
+
+function getSite(siteId) {
+  const site = SITES.find((s) => s.id === siteId);
+  if (!site) throw new Error(`unknown siteId: ${siteId}`);
+  return site;
+}
+
+async function fetchLastDeployed(siteId, branch) {
+  const site = getSite(siteId);
+  const url = `https://api.github.com/repos/${site.owner}/${site.repo}/commits?sha=${branch}&per_page=1`;
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`GitHub API ${res.status} -- ${repo.name}@${branch}`);
+  if (!res.ok) throw new Error(`GitHub API ${res.status} -- ${site.repo}@${branch}`);
 
   const data = await res.json();
-  if (!data.length) throw new Error(`no commits found -- ${repo.name}@${branch}`);
+  if (!data.length) throw new Error(`no commits found -- ${site.repo}@${branch}`);
 
   return data[0].commit.committer.date;
 }
@@ -53,18 +92,6 @@ function displayDate(element, date) {
     minute: "2-digit",
     timeZoneName: "short",
   });
-}
-
-function getEnvironment() {
-  // Determine environment based on subdomain
-  const host = window.location.hostname;
-  if (host.startsWith("dev.")) {
-    return "Development";
-  } else if (host.startsWith("qa.")) {
-    return "QA / Staging";
-  } else {
-    return "Production";
-  }
 }
 
 function showEnvLabel(envLabel) {
