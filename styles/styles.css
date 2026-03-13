@@ -2,16 +2,14 @@
    styles/styles.css — monitoring-pipeline (dark theme)
    Import AFTER theme.css.
 
-   This file only does two things:
+   This file does three things:
    1. Sets the color values for the dark theme via :root
-   2. Adds the .status-card component — the only thing unique to this page
+   2. Adds the status card component — the core of this page
+   3. Adds the status page layout — header row, card list
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
    DARK THEME — COLOR VALUES
-   The ONLY meaningful difference from the main site.
-   Everything else — layout, navbar, container, footer, buttons, typography —
-   comes from theme.css and works identically on both sites.
    -------------------------------------------------------------------------- */
 
 :root {
@@ -22,70 +20,17 @@
   --color-muted: #94a3b8;
   --color-accent: #60a5fa;
   --color-accent-hover: #93c5fd;
-  --color-green: #22c55e;
-  --color-yellow: #eab308;
-  --color-red: #ef4444;
+
+  /* env badge — dark theme */
   --color-env-badge-bg: rgba(250, 204, 21, 0.15);
   --color-env-badge-text: #fbbf24;
-  --radius-md: 8px;
 }
 
 /* --------------------------------------------------------------------------
-   STATUS CARD
-   The only component that exists on this page and nowhere else.
-   Everything else on this page (navbar, container, footer, links)
-   is already handled by theme.css.
+   STATUS PAGE LAYOUT
+   Header row: "Environments" heading left, env label right.
    -------------------------------------------------------------------------- */
 
-main {
-  padding: var(--space-lg) 0; /* less vertical space on phones */
-}
-
-.status-card {
-  display: flex; /* flex is just for the inner content row */
-  align-items: center;
-  gap: 0.75rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem 2rem;
-  margin-bottom: var(--space-md); /* stacking */
-}
-
-.status-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
-  background: var(--color-green);
-  box-shadow: 0 0 8px var(--color-green);
-}
-
-.status-text {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-}
-
-main .container {
-  text-align: center;
-}
-
-@media (max-width: 640px) {
-  .container {
-    padding: 0 var(--space-sm); /* tighter horizontal padding on phones */
-  }
-}
-
-/* env badge token values -- dark theme */
-:root {
-  --color-env-badge-bg: rgba(250, 204, 21, 0.15);
-  --color-env-badge-text: #fbbf24;
-  --color-green: #22c55e;
-  --radius-md: 8px;
-}
-
-/* status page header row -- env label sits right of heading */
 .status-page-header {
   display: flex;
   align-items: baseline;
@@ -95,14 +40,21 @@ main .container {
   margin-bottom: 1.25rem;
 }
 
-/* card list */
+/* --------------------------------------------------------------------------
+   STATUS CARD LIST
+   -------------------------------------------------------------------------- */
+
 #status-cards {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* individual card */
+/* --------------------------------------------------------------------------
+   STATUS CARD
+   Each card: dot indicator left, content (two rows) right.
+   -------------------------------------------------------------------------- */
+
 .status-card {
   display: flex;
   align-items: center;
@@ -113,13 +65,13 @@ main .container {
   border-radius: var(--radius-md);
 }
 
-/* status dot */
+/* status dot — default gray until JS applies a modifier */
 .status-indicator {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: var(--color-muted); /* default until JS applies a modifier */
+  background: var(--color-muted);
 }
 
 .status-indicator--up {
@@ -142,7 +94,7 @@ main .container {
   box-shadow: none;
 }
 
-/* card right side -- two rows */
+/* card right side — two rows stacked */
 .status-card-content {
   display: flex;
   flex-direction: column;
@@ -151,7 +103,7 @@ main .container {
   min-width: 0; /* prevents overflow on narrow screens */
 }
 
-/* top row: site link left, operational badge right */
+/* top row: site link left, badge right */
 .status-card-top {
   display: flex;
   justify-content: space-between;
@@ -159,7 +111,7 @@ main .container {
   gap: 12px;
 }
 
-/* site url link */
+/* site url */
 .status-site {
   font-family: monospace;
   font-size: 0.875rem;
@@ -181,23 +133,14 @@ main .container {
   white-space: nowrap;
 }
 
-.status-ok {
-  color: var(--color-green);
-}
-.status-degraded {
-  color: var(--color-yellow);
-}
-.status-down {
-  color: var(--color-red);
-}
-
-/* bottom row: last deployed date */
+/* bottom row: last commit date */
 .status-card-meta {
   font-size: 0.75rem;
   color: var(--color-muted);
   margin: 0;
 }
 
+/* prevents date from shifting card width as it loads in async */
 .status-card-date {
-  font-variant-numeric: tabular-nums; /* date doesn't shift width as it loads */
+  font-variant-numeric: tabular-nums;
 }
