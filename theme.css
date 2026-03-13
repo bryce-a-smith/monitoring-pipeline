@@ -266,6 +266,27 @@ a:hover {
   color: var(--color-red);
 }
 
+/* env label badge -- shown in header on non-prod environments */
+.env-label-header {
+  display: none; /* js sets inline-block when active */
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin-left: 8px;
+  text-transform: uppercase;
+  background: var(--color-env-badge-bg);
+  color: var(--color-env-badge-text);
+}
+
+/* small muted metadata line */
+.page-meta {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-top: 0.25rem;
+}
 /* --------------------------------------------------------------------------
    TYPOGRAPHY UTILITIES
    Generic enough to be reused anywhere.
