@@ -30,8 +30,12 @@ status.aldenbryce.com
   |- renders environment cards with live state
 
 UptimeRobot (independent, every 5 min)
-  |- fires email alert on state change
-
+  |- fires webhook on state change
+  |
+Power Automate
+  |- receives webhook
+  |- sends email alert
+```
 
 ---
 
@@ -63,21 +67,19 @@ UptimeRobot (independent, every 5 min)
 ## Repo structure
 
 ```
-
 monitoring-pipeline/
-.github/
-workflows/
-health-check.yml # cron job, runs every 5 min, writes to status-data branch
-site/
-index.html # status page
-incidents.html # incident log (linked from aldenbryce.com/incidents)
-styles/
-styles.css # dark theme + status card component
-scripts/
-script.js # data layer, GitHub API fetches, card builder
-amplify.yml # tells Amplify to serve from site/ subfolder
-README.md
-
+  .github/
+    workflows/
+      health-check.yml     # cron job, runs every 5 min, writes to status-data branch
+  site/
+    index.html             # status page
+    incidents.html         # incident log (linked from aldenbryce.com/incidents)
+    styles/
+      styles.css           # dark theme + status card component
+    scripts/
+      script.js            # data layer, GitHub API fetches, card builder
+  amplify.yml              # tells Amplify to serve from site/ subfolder
+  README.md
 ```
 
 Branch `status-data` contains only `status.json` -- written by the health check workflow, never deployed by Amplify.
@@ -132,14 +134,25 @@ See [INC-001](https://aldenbryce.com/incidents) for an example -- a DNS conflict
 
 ## Screenshots
 
-_Add after deploying all environments and verifying green status._
+### Status Page
 
-|                       |                                                  |
-| --------------------- | ------------------------------------------------ |
-| Status page           | `docs/screenshots/screenshot-status-page.png`    |
-| Incident log          | `docs/screenshots/screenshot-incident-log.png`   |
-| UptimeRobot dashboard | `docs/screenshots/screenshot-uptimerobot.png`    |
-| GitHub Actions run    | `docs/screenshots/screenshot-github-actions.png` |
+![Status Page](docs/screenshots/screenshot-status-page.png)
+
+### Incident Log
+
+![Incident Log](docs/screenshots/screenshot-incident-log.png)
+
+### UptimeRobot Dashboard
+
+![UptimeRobot](docs/screenshots/screenshot-uptimerobot.png)
+
+### GitHub Actions — Health Check Run
+
+![GitHub Actions](docs/screenshots/screenshot-github-actions.png)
+
+### Status Data Branch
+
+![Status Data Branch](docs/screenshots/screenshot-status-data.png)
 
 ---
 
@@ -147,4 +160,3 @@ _Add after deploying all environments and verifying green status._
 
 - Portfolio site: [aldenbryce.com](https://aldenbryce.com) -- [github.com/bryce-a-smith/Website](https://github.com/bryce-a-smith/Website)
 - Incident log: [aldenbryce.com/incidents](https://aldenbryce.com/incidents)
-```
