@@ -7,7 +7,7 @@ const CONFIG = { siteId: "monitoring" };
 
 const SITES = [
   { id: "portfolio", owner: "bryce-a-smith", repo: "Website", rootDomain: "aldenbryce.com" },
-  { id: "monitoring", owner: "bryce-a-smith", repo: "monitoring-monitoring", rootDomain: "status.aldenbryce.com" },
+  { id: "monitoring", owner: "bryce-a-smith", repo: "monitoring-pipeline", rootDomain: "status.aldenbryce.com" },
 ];
 
 const ENVIRONMENTS = [
@@ -128,7 +128,7 @@ function buildStatusCards() {
 }
 
 ////
-
+/*
 function parseDate(dateString) {
   // Convert raw date string to Date object
   return new Date(dateString);
@@ -164,33 +164,38 @@ function displayEnvironment(element, env) {
   // Display the environment in the specified element
   element.textContent = env;
 }
+  */
+
+// -- init -- //
 
 async function init() {
-  // Main initialization function to fetch and display date and environment
-  // Get references to the DOM elements where the date and environment will be displayed
-  const dateLastUpdatedP = document.getElementById("date-last-updated");
-  const environmentSpan = document.getElementById("environment");
-  const envLabel = document.getElementById("env-label");
-  const lastDeployed = document.getElementById("last-deployed");
+  const host = window.location.hostname;
+  const branch = getBranch(host);
+  const env = getEnv(host);
 
-  // Check if the required elements are present in the DOM
-  if (!dateLastUpdatedP || !environmentSpan || !envLabel || !lastDeployed) {
-    console.error("One or more required elements not found.");
-    return;
+  const envLabelHeader = document.getElementById("env-label-header");
+  if (envLabelHeader) {
+    if (!isProd(host)) {
+      envLabelHeader.textContent = env;
+      envLabelHeader.style.display = "inline-block";
+    } else {
+      envLabelHeader.style.display = "none";
+    }
   }
 
-  // Display the environment immediately without waiting for the date fetch to complete
-  displayEnvironment(environmentSpan, getEnvironment());
-  showEnvLabel(envLabel);
+  setText(document.getElementById("env-label-main"), env);
+
+  buildStatusCards();
+
+  const dateLastDeployedFooter = document.getElementById("date-last-deployed-footer");
 
   try {
-    // Fetch, parse, and display the last updated date
-    const rawDate = await fetchLastDeployed();
-    displayDate(dateLastUpdatedP, parseDate(rawDate)); // Convert raw date string to Date object before displaying
-  } catch (error) {
-    console.error("Error fetching last updated date:", error);
-    dateLastUpdatedP.textContent = "Error fetching date";
+    const raw = await fetchLastDeployed(CONFIG.siteId, branch);
+    setText(dateLastDeployedFooter, formatDate(raw));
+  } catch (err) {
+    console.error("fetchLastDeployed failed:", err);
+    setText(dateLastDeployedFooter, "unavailable");
   }
 }
 
-document.addEventListener("DOMContentLoaded", init); // Initialize the page once the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", init);
