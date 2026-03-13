@@ -48,7 +48,14 @@ function isProd(hostname) {
 
 function formatDate(iso, options) {
   if (!iso) return "unavailable";
-  const defaults = { month: "short", day: "numeric", year: "numeric" };
+  const defaults = {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  };
   return new Date(iso).toLocaleDateString("en-US", options || defaults);
 }
 
@@ -203,14 +210,7 @@ async function buildStatusCards() {
       fetchLastDeployed(env.siteId, getBranchFromUrl(env.url))
         .then((raw) => ({
           url: env.url,
-          date: formatDate(raw, {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZoneName: "short",
-          }),
+          date: formatDate(raw),
         }))
         .catch(() => ({ url: env.url, date: "unavailable" })),
     ),
@@ -231,45 +231,6 @@ async function buildStatusCards() {
     if (span) span.textContent = date;
   });
 }
-
-////
-/*
-function parseDate(dateString) {
-  // Convert raw date string to Date object
-  return new Date(dateString);
-}
-
-function displayDate(element, date) {
-  // Format the date and display it in the specified element
-  element.textContent = date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-  });
-}
-
-function showEnvLabel(envLabel) {
-  const env = getEnvironment();
-
-  if (!envLabel) return;
-  if (env) {
-    if (env === "Production") {
-      envLabel.style.display = "none"; // Hide the label for production
-    } else {
-      envLabel.style.display = "inline-block"; // Show the label for non-production environments
-      envLabel.textContent = env;
-    }
-  }
-}
-
-function displayEnvironment(element, env) {
-  // Display the environment in the specified element
-  element.textContent = env;
-}
-  */
 
 // -- init -- //
 
