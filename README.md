@@ -140,7 +140,6 @@ _Add after deploying all environments and verifying green status._
 | Incident log          | `docs/screenshots/screenshot-incident-log.png`   |
 | UptimeRobot dashboard | `docs/screenshots/screenshot-uptimerobot.png`    |
 | GitHub Actions run    | `docs/screenshots/screenshot-github-actions.png` |
-| Power Automate flow   | `docs/screenshots/screenshot-power-automate.png` |
 
 ---
 
