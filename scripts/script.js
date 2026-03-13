@@ -91,6 +91,40 @@ async function fetchSiteStatus() {
 
 // ui and card builder//
 
+function getStatusConfig(status) {
+  switch (status) {
+    case "up":
+      return { modifier: "up", label: "Operational", cssClass: "status-ok" };
+    case "degraded":
+      return { modifier: "degraded", label: "Degraded", cssClass: "status-degraded" };
+    case "down":
+      return { modifier: "down", label: "Outage", cssClass: "status-down" };
+    default:
+      return { modifier: "unknown", label: "Unknown", cssClass: "" };
+  }
+}
+
+function applyStatusToCards(container, statusData) {
+  statusData.forEach((entry) => {
+    const escaped = CSS.escape(entry.url);
+    const card = container.querySelector(`.status-card[data-url="${escaped}"]`);
+    if (!card) return;
+
+    const indicator = card.querySelector(".status-indicator");
+    const badge = card.querySelector(".status-text");
+    if (!indicator || !badge) return;
+
+    const config = getStatusConfig(entry.status);
+
+    // reset and apply modifier class
+    indicator.className = "status-indicator";
+    indicator.classList.add(`status-indicator--${config.modifier}`);
+
+    badge.className = `status-text ${config.cssClass}`.trim();
+    badge.textContent = config.label;
+  });
+}
+
 function createStatusCard(env) {
   const branch = getBranchFromUrl(env.url);
 
