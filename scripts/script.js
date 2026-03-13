@@ -1,13 +1,41 @@
 "use strict";
 
-async function fetchDateLastUpdated() {
-  // Fetch the last commit date from GitHub API
-  const response = await fetch("https://api.github.com/repos/bryce-a-smith/monitoring-pipeline/commits/main");
-  if (!response.ok) {
-    throw new Error(`GitHub API request failed: ${response.status} ${response.statusText}`);
-  }
-  const data = await response.json();
-  return data.commit.author.date; //raw string date from GitHub API
+// which site this script belongs to -- only line that differs between sites
+const CONFIG = { siteId: "monitoring" };
+
+// -- data layer -- //
+
+const SITES = [
+  { id: "portfolio", owner: "bryce-a-smith", repo: "Website", rootDomain: "aldenbryce.com" },
+  { id: "monitoring", owner: "bryce-a-smith", repo: "monitoring-monitoring", rootDomain: "status.aldenbryce.com" },
+];
+
+const ENVIRONMENTS = [
+  { label: "aldenbryce.com", url: "https://aldenbryce.com", siteId: "portfolio" },
+  { label: "dev.aldenbryce.com", url: "https://dev.aldenbryce.com", siteId: "portfolio" },
+  { label: "qa.aldenbryce.com", url: "https://qa.aldenbryce.com", siteId: "portfolio" },
+  { label: "status.aldenbryce.com", url: "https://status.aldenbryce.com", siteId: "monitoring" },
+  { label: "dev.status.aldenbryce.com", url: "https://dev.status.aldenbryce.com", siteId: "monitoring" },
+  { label: "qa.status.aldenbryce.com", url: "https://qa.status.aldenbryce.com", siteId: "monitoring" },
+];
+
+function getRepo(repoId) {
+  const repo = REPOS.find((r) => r.id === repoId);
+  if (!repo) throw new Error(`unknown repoId: ${repoId}`);
+  return repo;
+}
+
+async function fetchLastDeployed(repoId, branch) {
+  const repo = getRepo(repoId);
+  const url = `https://api.github.com/repos/${repo.owner}/${repo.name}/commits?sha=${branch}&per_page=1`;
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`GitHub API ${res.status} -- ${repo.name}@${branch}`);
+
+  const data = await res.json();
+  if (!data.length) throw new Error(`no commits found -- ${repo.name}@${branch}`);
+
+  return data[0].commit.committer.date;
 }
 
 function parseDate(dateString) {
@@ -39,6 +67,20 @@ function getEnvironment() {
   }
 }
 
+function showEnvLabel(envLabel) {
+  const env = getEnvironment();
+
+  if (!envLabel) return;
+  if (env) {
+    if (env === "Production") {
+      envLabel.style.display = "none"; // Hide the label for production
+    } else {
+      envLabel.style.display = "inline-block"; // Show the label for non-production environments
+      envLabel.textContent = env;
+    }
+  }
+}
+
 function displayEnvironment(element, env) {
   // Display the environment in the specified element
   element.textContent = env;
@@ -49,19 +91,22 @@ async function init() {
   // Get references to the DOM elements where the date and environment will be displayed
   const dateLastUpdatedP = document.getElementById("date-last-updated");
   const environmentSpan = document.getElementById("environment");
+  const envLabel = document.getElementById("env-label");
+  const lastDeployed = document.getElementById("last-deployed");
 
   // Check if the required elements are present in the DOM
-  if (!dateLastUpdatedP || !environmentSpan) {
-    console.error("Element with ID 'date-last-updated' or 'environment' not found.");
+  if (!dateLastUpdatedP || !environmentSpan || !envLabel || !lastDeployed) {
+    console.error("One or more required elements not found.");
     return;
   }
 
   // Display the environment immediately without waiting for the date fetch to complete
   displayEnvironment(environmentSpan, getEnvironment());
+  showEnvLabel(envLabel);
 
   try {
     // Fetch, parse, and display the last updated date
-    const rawDate = await fetchDateLastUpdated();
+    const rawDate = await fetchLastDeployed();
     displayDate(dateLastUpdatedP, parseDate(rawDate)); // Convert raw date string to Date object before displaying
   } catch (error) {
     console.error("Error fetching last updated date:", error);

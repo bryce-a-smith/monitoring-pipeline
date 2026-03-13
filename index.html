@@ -15,6 +15,7 @@
         <div class="container nav-content">
             <h1 class="logo">
                <a href="https://aldenbryce.com" class="unstyled-link">Alden B. Smith</a>
+                <span id="env-label" class="env-label-header"></span>
             </h1>
             <nav>
                 <ul class="nav-links">
@@ -36,7 +37,7 @@
         <section class="section">
             <div class="container">
                 <!-- Added a span with an ID to display the current environment -->
-                <h2><span>Current Environment:</span> <span id="environment"></span></h2>
+                <h2><span>Current Environment:</span> <span id="env-label-main"></span></h2>
                 <h3>Application Status:</h3>
 
                 <div class="status-card">
@@ -46,7 +47,7 @@
                 
                 <div class="status-card">
                     <!-- Added a paragraph to display the last updated date with an ID for dynamic content -->
-                    <p>Date Last Updated: <strong id="date-last-updated"></strong></p>
+                    <p>Date Last Updated: <strong id="date-last-deployed"></strong></p>
                 </div>
                 
                 <div class="status-card">
@@ -59,7 +60,7 @@
         </section>
     </main>
     <footer class="footer">
-            <p>&copy; 2026 Alden B. Smith</p>
+      <p>&copy; 2026 Alden B. Smith &nbsp;&middot;&nbsp; Last deployed: <span id="date-last-deployed-footer">...</span></p>
     </footer>
     <!-- Added a script tag to link to the JavaScript file for dynamic content -->
     <script src="scripts/script.js"></script>
