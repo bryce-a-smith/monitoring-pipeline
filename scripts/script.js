@@ -132,13 +132,18 @@ function createStatusCard(env) {
   card.className = "status-card";
   card.dataset.siteId = env.siteId;
   card.dataset.branch = branch;
+  card.dataset.url = env.url; // used by applyStatusToCards
 
   const indicator = document.createElement("span");
   indicator.className = "status-indicator";
   indicator.setAttribute("aria-hidden", "true");
 
-  const body = document.createElement("div");
-  body.className = "status-card-body";
+  const content = document.createElement("div");
+  content.className = "status-card-content";
+
+  // top row: site link + operational badge
+  const topRow = document.createElement("div");
+  topRow.className = "status-card-top";
 
   const siteLink = document.createElement("a");
   siteLink.className = "status-site";
@@ -151,11 +156,28 @@ function createStatusCard(env) {
   statusText.className = "status-text status-ok";
   statusText.textContent = "Operational";
 
-  body.appendChild(siteLink);
-  body.appendChild(statusText);
+  topRow.appendChild(siteLink);
+  topRow.appendChild(statusText);
+
+  // bottom row: last deployed date
+  const metaRow = document.createElement("p");
+  metaRow.className = "status-card-meta";
+
+  const metaLabel = document.createTextNode("Last deployed: ");
+
+  const dateSpan = document.createElement("span"); // <-- here it is
+  dateSpan.className = "status-card-date";
+  dateSpan.dataset.url = env.url; // used by buildStatusCards to find this span
+  dateSpan.textContent = "...";
+
+  metaRow.appendChild(metaLabel);
+  metaRow.appendChild(dateSpan);
+
+  content.appendChild(topRow);
+  content.appendChild(metaRow);
 
   card.appendChild(indicator);
-  card.appendChild(body);
+  card.appendChild(content);
 
   return card;
 }
