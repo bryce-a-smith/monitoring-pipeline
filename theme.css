@@ -266,9 +266,9 @@ a:hover {
   color: var(--color-red);
 }
 
-/* env label badge -- shown in header on non-prod environments */
+/* env badge -- shown in header on non-prod environments, hidden on prod by JS */
 .env-label-header {
-  display: none; /* js sets inline-block when active */
+  display: none;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -281,12 +281,13 @@ a:hover {
   color: var(--color-env-badge-text);
 }
 
-/* small muted metadata line */
+/* small muted line used under headings and in card meta rows */
 .page-meta {
   font-size: 0.85rem;
   color: var(--color-muted);
   margin-top: 0.25rem;
 }
+
 /* --------------------------------------------------------------------------
    TYPOGRAPHY UTILITIES
    Generic enough to be reused anywhere.
