@@ -170,7 +170,7 @@ function createStatusCard(env) {
   const metaRow = document.createElement("p");
   metaRow.className = "status-card-meta";
 
-  const metaLabel = document.createTextNode("Last deployed: ");
+  const metaLabel = document.createTextNode("Last commit: ");
 
   const dateSpan = document.createElement("span"); // <-- here it is
   dateSpan.className = "status-card-date";
