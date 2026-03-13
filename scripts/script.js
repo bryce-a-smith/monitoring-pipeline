@@ -77,6 +77,8 @@ async function fetchLastDeployed(siteId, branch) {
   return data[0].commit.committer.date;
 }
 
+// status data api -- this is just a static JSON file in the repo, updated by a GitHub Action on a schedule.
+// In a real system, this would likely be a dynamic API endpoint backed by a database or monitoring system.
 const STATUS_URL = "https://raw.githubusercontent.com/bryce-a-smith/monitoring-pipeline/status-data/status.json";
 
 async function fetchSiteStatus() {
