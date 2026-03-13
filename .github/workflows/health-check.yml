@@ -1,0 +1,67 @@
+name: Health Check
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write # required to push status.json back to status-data
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out status-data branch
+        uses: actions/checkout@v4.2.2
+        with:
+          ref: status-data
+          persist-credentials: true # keeps GITHUB_TOKEN available for the push
+
+      - name: Run health checks
+        run: |
+          URLS=(
+            "https://aldenbryce.com"
+            "https://dev.aldenbryce.com"
+            "https://qa.aldenbryce.com"
+            "https://status.aldenbryce.com"
+            "https://dev.status.aldenbryce.com"
+            "https://qa.status.aldenbryce.com"
+          )
+
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          JSON="["
+
+          for URL in "${URLS[@]}"; do
+            RESPONSE=$(curl -o /dev/null -s -w "%{http_code} %{time_total}" \
+              --max-time 10 \
+              --connect-timeout 5 \
+              "$URL" || echo "000 0")
+
+            CODE=$(echo "$RESPONSE" | cut -d' ' -f1)
+            TIME_RAW=$(echo "$RESPONSE" | cut -d' ' -f2)
+            TIME_MS=$(awk "BEGIN {printf \"%d\", $TIME_RAW * 1000}")
+
+            if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 300 ]; then
+              STATUS="up"
+            elif [ "$CODE" = "000" ] || [ "$CODE" -ge 500 ]; then
+              STATUS="down"
+            else
+              STATUS="degraded"
+            fi
+
+            JSON+="{\"url\":\"$URL\",\"status\":\"$STATUS\",\"statusCode\":$CODE,\"responseTimeMs\":$TIME_MS,\"checkedAt\":\"$TIMESTAMP\"},"
+          done
+
+          JSON="${JSON%,}]"
+          echo "$JSON" > status.json
+          cat status.json    # print to logs so you can verify output
+
+      - name: Commit and push status.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add status.json
+          git diff --cached --quiet || git commit -m "chore: health check $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          git push origin status-data
