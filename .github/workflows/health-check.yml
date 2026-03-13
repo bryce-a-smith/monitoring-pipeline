@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Check out status-data branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           ref: status-data
           persist-credentials: true # keeps GITHUB_TOKEN available for the push
