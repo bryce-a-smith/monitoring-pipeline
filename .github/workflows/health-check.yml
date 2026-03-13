@@ -1,0 +1,64 @@
+name: Health Check
+
+on:
+  schedule:
+    - cron: "*/5 * * * *" # every 5 minutes
+  workflow_dispatch: # lets you trigger it manually too
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out status-data branch
+        uses: actions/checkout@v4
+        with:
+          ref: status-data
+
+      - name: Run health checks
+        id: checks
+        run: |
+          URLS=(
+            "https://aldenbryce.com"
+            "https://dev.aldenbryce.com"
+            "https://qa.aldenbryce.com"
+            "https://status.aldenbryce.com"
+            "https://dev.status.aldenbryce.com"
+            "https://qa.status.aldenbryce.com"
+          )
+
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          JSON="["
+
+          for URL in "${URLS[@]}"; do
+            RESPONSE=$(curl -o /dev/null -s -w "%{http_code} %{time_total}" \
+              --max-time 10 \
+              --connect-timeout 5 \
+              "$URL" || echo "000 0")
+
+            CODE=$(echo "$RESPONSE" | cut -d' ' -f1)
+            TIME=$(echo "$RESPONSE" | cut -d' ' -f2)
+            TIME_MS=$(echo "$TIME * 1000" | bc | cut -d'.' -f1)
+
+            if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 300 ]; then
+              STATUS="up"
+            elif [ "$CODE" -ge 500 ] || [ "$CODE" = "000" ]; then
+              STATUS="down"
+            else
+              STATUS="degraded"
+            fi
+
+            JSON+="{\"url\":\"$URL\",\"status\":\"$STATUS\",\"statusCode\":$CODE,\"responseTimeMs\":$TIME_MS,\"checkedAt\":\"$TIMESTAMP\"},"
+          done
+
+          JSON="${JSON%,}]"
+          echo "$JSON" > status.json
+          echo "Checks complete"
+
+      - name: Commit and push status.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add status.json
+          git diff --cached --quiet || git commit -m "chore: health check $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          git push origin status-data
