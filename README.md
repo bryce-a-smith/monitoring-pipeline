@@ -30,12 +30,8 @@ status.aldenbryce.com
   |- renders environment cards with live state
 
 UptimeRobot (independent, every 5 min)
-  |- fires webhook on state change
-  |
-Power Automate
-  |- receives webhook
-  |- sends email alert
-```
+  |- fires email alert on state change
+
 
 ---
 
@@ -67,19 +63,21 @@ Power Automate
 ## Repo structure
 
 ```
+
 monitoring-pipeline/
-  .github/
-    workflows/
-      health-check.yml     # cron job, runs every 5 min, writes to status-data branch
-  site/
-    index.html             # status page
-    incidents.html         # incident log (linked from aldenbryce.com/incidents)
-    styles/
-      styles.css           # dark theme + status card component
-    scripts/
-      script.js            # data layer, GitHub API fetches, card builder
-  amplify.yml              # tells Amplify to serve from site/ subfolder
-  README.md
+.github/
+workflows/
+health-check.yml # cron job, runs every 5 min, writes to status-data branch
+site/
+index.html # status page
+incidents.html # incident log (linked from aldenbryce.com/incidents)
+styles/
+styles.css # dark theme + status card component
+scripts/
+script.js # data layer, GitHub API fetches, card builder
+amplify.yml # tells Amplify to serve from site/ subfolder
+README.md
+
 ```
 
 Branch `status-data` contains only `status.json` -- written by the health check workflow, never deployed by Amplify.
@@ -150,3 +148,4 @@ _Add after deploying all environments and verifying green status._
 
 - Portfolio site: [aldenbryce.com](https://aldenbryce.com) -- [github.com/bryce-a-smith/Website](https://github.com/bryce-a-smith/Website)
 - Incident log: [aldenbryce.com/incidents](https://aldenbryce.com/incidents)
+```
